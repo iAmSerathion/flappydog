@@ -37,6 +37,10 @@ struct GameWorld: Sendable {
     private(set) var started = false
     private(set) var crashed = false
     private(set) var landed = false
+    /// `dogY` before the last step, for drawing between steps.
+    private(set) var previousDogY = playCenter
+    /// How far every pillar moved left in the last step.
+    private(set) var lastStepDX = 0.0
     private var accumulator = 0.0
     private var rng: SplitMix64
 
@@ -48,6 +52,13 @@ struct GameWorld: Sendable {
     var speedFactor: Double { config.speedFactor(forScore: score) }
     private var spawnX: Double { Self.width + spawnMargin + Self.pillarWidth / 2 }
     private var pitch: Double { config.pillarSpacing + Self.pillarWidth }
+
+    /// How far real time has run into the next step, 0 ..< 1.
+    var alpha: Double { min(accumulator / Self.step, 1) }
+    /// The dog's height drawn between the last two steps, so motion stays smooth whatever the frame rhythm.
+    var renderDogY: Double { previousDogY + (dogY - previousDogY) * alpha }
+    /// A pillar's x drawn between the last two steps.
+    func renderX(of pillar: Pillar) -> Double { pillar.x + lastStepDX * (1 - alpha) }
 
     /// A flap sets the upward speed rather than adding to it, so every tap feels the same.
     mutating func flap() {
@@ -71,6 +82,8 @@ struct GameWorld: Sendable {
     }
 
     mutating func step() -> [Event] {
+        previousDogY = dogY
+        lastStepDX = 0
         guard started, !landed else { return [] }
         var events: [Event] = []
 
@@ -81,6 +94,8 @@ struct GameWorld: Sendable {
             // After a crash the dog just drops to the ground.
             if dogY - Self.dogRadius <= Self.groundHeight {
                 dogY = Self.groundHeight + Self.dogRadius
+                // No more steps follow, so draw the landed dog exactly on the ground.
+                previousDogY = dogY
                 landed = true
                 events.append(.landed)
             }
@@ -88,6 +103,7 @@ struct GameWorld: Sendable {
         }
 
         let dx = config.scrollSpeed * speedFactor * Self.step
+        lastStepDX = dx
         for i in pillars.indices { pillars[i].x -= dx }
         pillars.removeAll { $0.x < -spawnMargin - Self.pillarWidth }
         if let last = pillars.last, last.x <= spawnX - pitch {
