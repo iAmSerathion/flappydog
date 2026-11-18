@@ -44,6 +44,12 @@ final class GameScene: SKScene {
         worldNode.addChild(dog)
         dog.position = CGPoint(x: GameWorld.dogX, y: GameWorld.playCenter)
         layout()
+
+        // Build the bone texture and a few pillars now, not on the first flap, and upload it to the GPU early.
+        // Wide screens show at most about four pillar pairs at once.
+        for _ in 0..<4 { addPillarNode() }
+        // @Sendable: SpriteKit calls this off the main thread; a main-actor closure would trap in Swift 6.
+        SKTexture.preload([PillarNode.texture]) { @Sendable in }
     }
 
     @available(*, unavailable)
@@ -105,7 +111,8 @@ final class GameScene: SKScene {
     // MARK: Frame
 
     override func update(_ currentTime: TimeInterval) {
-        let dt = min(lastTime.map { currentTime - $0 } ?? 0, 0.1)
+        // After a hitch, catch up at most 1/30 s instead of jumping ahead in one frame.
+        let dt = min(lastTime.map { currentTime - $0 } ?? 0, 1.0 / 30)
         lastTime = currentTime
         guard let model else { return }
         model.tick(dt)
@@ -128,26 +135,29 @@ final class GameScene: SKScene {
         if hovering {
             dog.position.y = GameWorld.playCenter + sin(hoverTime * 3.5) * 8
         } else {
-            dog.position.y = world.dogY
+            dog.position.y = world.renderDogY
         }
         let frozen = phase == .paused || phase == .gameOver
         dog.isPaused = frozen
         dog.update(dt: frozen ? 0 : dt, velocity: world.dogVelocity,
                    maxFall: world.config.maxFallSpeed, hovering: hovering)
 
-        syncPillars(hovering ? [] : world.pillars)
+        syncPillars(hovering ? [] : world.pillars, world: world)
     }
 
-    private func syncPillars(_ pillars: [GameWorld.Pillar]) {
-        while pillarNodes.count < pillars.count {
-            let node = PillarNode()
-            worldNode.addChild(node)
-            pillarNodes.append(node)
-        }
+    private func syncPillars(_ pillars: [GameWorld.Pillar], world: GameWorld) {
+        while pillarNodes.count < pillars.count { addPillarNode() }
         for (i, node) in pillarNodes.enumerated() {
             node.isHidden = i >= pillars.count
-            if i < pillars.count { node.place(pillars[i]) }
+            if i < pillars.count { node.place(pillars[i], x: world.renderX(of: pillars[i])) }
         }
+    }
+
+    private func addPillarNode() {
+        let node = PillarNode()
+        node.isHidden = true
+        worldNode.addChild(node)
+        pillarNodes.append(node)
     }
 }
 

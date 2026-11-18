@@ -38,6 +38,8 @@ final class GameModel {
         score = 0
         isNewBest = false
         scene.reset()
+        haptics.prepare()
+        sound.warmUp()
         phase = .ready
     }
 
@@ -69,6 +71,7 @@ final class GameModel {
 
     func resume() {
         guard phase == .paused else { return }
+        haptics.prepare()
         phase = .playing
     }
 

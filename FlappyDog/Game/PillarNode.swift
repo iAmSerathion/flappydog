@@ -2,7 +2,7 @@ import SpriteKit
 
 /// A pair of bone pillars around one gap. The top bone is the bottom one flipped.
 final class PillarNode: SKNode {
-    private static let texture = SKTexture(cgImage: Art.bonePillar())
+    static let texture = SKTexture(cgImage: Art.bonePillar())
     private let bottom = SKSpriteNode(texture: PillarNode.texture, size: Art.boneSize)
     private let top = SKSpriteNode(texture: PillarNode.texture, size: Art.boneSize)
 
@@ -18,8 +18,8 @@ final class PillarNode: SKNode {
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError() }
 
-    func place(_ pillar: GameWorld.Pillar) {
-        position.x = pillar.x
+    func place(_ pillar: GameWorld.Pillar, x: Double) {
+        position.x = x
         bottom.position.y = pillar.gapBottom
         top.position.y = pillar.gapTop
     }

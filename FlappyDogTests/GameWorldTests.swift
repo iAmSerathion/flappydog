@@ -113,6 +113,35 @@ struct GameWorldTests {
         #expect(abs(a.dogY - b.dogY) < 5) // at most one step apart from float rounding
     }
 
+    @Test func drawnPositionsMoveSmoothlyBetweenSteps() throws {
+        var world = GameWorld(seed: 3)
+        world.flap()
+        _ = world.update(by: W.step * 3.5) // three steps, half way into the fourth
+        #expect(abs(world.alpha - 0.5) < 1e-6)
+        let mid = world.previousDogY + (world.dogY - world.previousDogY) / 2
+        #expect(abs(world.renderDogY - mid) < 1e-6)
+        let pillar = try #require(world.pillars.first)
+        #expect(world.lastStepDX > 0)
+        #expect(abs(world.renderX(of: pillar) - (pillar.x + world.lastStepDX / 2)) < 1e-6)
+
+        // Drawn positions only ever move forward in time, however the frames are cut.
+        var previousX = world.renderX(of: pillar)
+        for dt in [0.003, 0.011, 0.0005, 0.017, 0.008, 0.0021] {
+            _ = world.update(by: dt)
+            let x = world.renderX(of: world.pillars[0])
+            #expect(x < previousX)
+            previousX = x
+        }
+    }
+
+    @Test func landedDogIsDrawnOnTheGround() {
+        var world = GameWorld(seed: 1)
+        world.flap()
+        var events: [GameWorld.Event] = []
+        while !events.contains(.landed) { events += world.update(by: 1.0 / 60) }
+        #expect(world.renderDogY == W.groundHeight + W.dogRadius)
+    }
+
     @Test func rampStopsAtItsCaps() {
         let normal = GameConfig.normal
         #expect(normal.speedFactor(forScore: 0) == 1)
