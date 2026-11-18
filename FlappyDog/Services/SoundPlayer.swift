@@ -39,7 +39,14 @@ final class SoundPlayer {
               startEngineIfNeeded() else { return }
         // Restarts the effect if it is still sounding, like rewinding a player.
         voice.node.scheduleBuffer(voice.buffer, at: nil, options: .interrupts)
-        if !voice.node.isPlaying { voice.node.play() }
+        // Always call play(): after an interruption isPlaying can stay true on a node that has stopped.
+        voice.node.play()
+    }
+
+    /// Starts the audio hardware before play begins, so the first flap is not late.
+    func warmUp() {
+        guard UserDefaults.standard.bool(forKey: SettingsKey.sound) else { return }
+        _ = startEngineIfNeeded()
     }
 
     /// Starts the engine on first use and again after an interruption or a route change stopped it.

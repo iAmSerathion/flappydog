@@ -48,7 +48,8 @@ final class GameScene: SKScene {
         // Build the bone texture and a few pillars now, not on the first flap, and upload it to the GPU early.
         // Wide screens show at most about four pillar pairs at once.
         for _ in 0..<4 { addPillarNode() }
-        SKTexture.preload([PillarNode.texture]) {}
+        // @Sendable: SpriteKit calls this off the main thread; a main-actor closure would trap in Swift 6.
+        SKTexture.preload([PillarNode.texture]) { @Sendable in }
     }
 
     @available(*, unavailable)

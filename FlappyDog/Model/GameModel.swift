@@ -39,6 +39,7 @@ final class GameModel {
         isNewBest = false
         scene.reset()
         haptics.prepare()
+        sound.warmUp()
         phase = .ready
     }
 
