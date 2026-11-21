@@ -4,6 +4,8 @@
 #   TEAM_ID=ABCDE12345 scripts/testflight.sh
 set -eu
 cd "$(dirname "$0")/.."
+# Xcode's IPA packaging fails ("Copy failed") with Homebrew's rsync 3.x; use the system one.
+export PATH="/usr/bin:$PATH"
 : "${TEAM_ID:?Set TEAM_ID to your Apple Developer team ID (developer.apple.com > Membership)}"
 
 ARCHIVE=build/FlappyDog.xcarchive
