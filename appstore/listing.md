@@ -4,7 +4,7 @@ Copy these fields into App Store Connect. The store name avoids "Flappy" (see PL
 
 ## Name (max 30)
 
-Sky Pup: Winged Woof
+Sky Pup
 
 ## Subtitle (max 30)
 

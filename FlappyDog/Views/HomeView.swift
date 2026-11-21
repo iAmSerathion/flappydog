@@ -7,7 +7,7 @@ struct HomeView: View {
     var body: some View {
         VStack(spacing: 16) {
             Spacer().frame(maxHeight: 60)
-            Headline(text: "Flappy Dog")
+            Headline(text: "Sky Pup")
                 .font(.system(size: 52, weight: .black, design: .rounded))
             Text("Best: \(model.best)")
                 .font(.system(.title2, design: .rounded).weight(.bold))
