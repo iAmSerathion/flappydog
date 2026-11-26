@@ -165,7 +165,7 @@ Ads, in-app purchases, multiplayer, Game Center, unlockable dogs or skins, Andro
 
 ## Risks and open questions
 
-- **App Store name.** Apple has rejected apps with "Flappy" in the title before. Pick a store name early (ideas: *Winged Woof*, *Sky Pup*, *Pup Glider*) and keep "Flappy Dog" as the project name.
+- **App Store name.** Decided: the app is published as **Sky Pup** (store name, home screen name and in-game title). "Flappy" must not appear in the published name; "Flappy Dog" stays the internal project name.
 - **Art source.** Who draws the dog, bones and background: you, a commissioned artist, or simple shapes for now? Placeholders let M1–M4 go ahead either way.
 - **The dog.** Breed, colour and name are still to be chosen.
 - **iPad.** Is the shared phone layout enough, or should iPad get a wider play area later?

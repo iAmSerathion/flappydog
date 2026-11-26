@@ -21,7 +21,7 @@ xcodebuild test -project FlappyDog.xcodeproj -scheme FlappyDog -destination 'pla
 Needs a paid [Apple Developer Program](https://developer.apple.com/programs/) membership.
 
 1. Join the program and sign in to Xcode with that account (Xcode > Settings > Accounts).
-2. In [App Store Connect](https://appstoreconnect.apple.com) create an app with bundle ID `com.socivolve.flappydog`. Apple has rejected names with "Flappy" before, so pick a store name such as *Sky Pup*.
+2. The app already exists in [App Store Connect](https://appstoreconnect.apple.com) as **Sky Pup** (bundle ID `com.socivolve.flappydog`). The published name must not contain "Flappy"; only the project keeps the name Flappy Dog.
 3. Upload (your team ID is under developer.apple.com > Membership):
 
    ```bash
@@ -31,6 +31,10 @@ Needs a paid [Apple Developer Program](https://developer.apple.com/programs/) me
 4. Once the build has processed, add yourself under TestFlight > Internal Testing and install it with the TestFlight app.
 
 Privacy details: no data collected (see `FlappyDog/PrivacyInfo.xcprivacy`); export compliance is answered in the Info.plist.
+
+## App Store
+
+Store texts, settings and screenshots for the submitted version are in [appstore/listing.md](appstore/listing.md). The script bumps the build number on upload and uses the system `rsync`, because Homebrew's rsync breaks the IPA export.
 
 ## Layout
 
